@@ -1,0 +1,9 @@
+One of the first projects we want to work on is a Bitcoin model based on aggregate crypto supply and global money supply. Basically, everyone looks at BTC as having 21MM capped supply, but this is inaccurate. BTC is open source code and can be replicated, copied infinitely. So when BTC does well, we get Fartcoin and other coins come up, aggregate supply increases and makes BTC more vulnerable to a decline.
+ 
+So we will want to do as follows:
+ 
+Compile the market cap for every coin in the world. Might need to use a site like coingecko or coinbase for this.
+Convert them to BTC equivalent. For example, if fartcoin is 1.5BN market cap, we can convert that to an equivalent amount of BTC coins.
+We then have an aggregate crypto supply measure in BTC terms.
+Next, we will want to aggregate global money supply for all major economies (US, UK, EUR, CAD, AUD, NZD, CHF, SEK, CHF, NOK, BRL, MXN, CNY, JPY)
+Build a multi factor model to predict price of BTC.
