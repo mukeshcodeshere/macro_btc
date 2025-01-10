@@ -3,15 +3,18 @@ import requests
 import pandas_datareader.data as web
 import statsmodels.api as sm
 from sklearn.preprocessing import StandardScaler
+import yfinance as yf
 
 def get_btc_price():
-    url = 'https://api.coingecko.com/api/v3/simple/price'
-    params = {
-        'ids': 'bitcoin',
-        'vs_currencies': 'usd'
-    }
-    response = requests.get(url, params=params).json()
-    return float(response['bitcoin']['usd'])
+    # Ticker symbol for Bitcoin (BTC-USD)
+    btc = yf.Ticker('BTC-USD')
+    # Fetch historical data (latest data)
+    data = btc.history(period='1d')  # '1d' for daily data
+    # Get the latest closing price
+    latest_price = data['Close'].iloc[-1]
+    return latest_price
+
+
 
 def fetch_money_supply(country_code):
     # Get today's date for the end parameter
@@ -44,32 +47,32 @@ money_supply_us = fetch_money_supply('USD')
 # Display the last few rows
 print(money_supply_us.tail())
 
-# Merge both data sources to create a time series for modeling
-data = pd.DataFrame({
-    'crypto_supply_btc': [total_crypto_supply_btc] * len(money_supply_us),
-    'money_supply_us': money_supply_us['M2SL'],
-    'btc_price': [btc_price] * len(money_supply_us)
-}, index=money_supply_us.index)
+# # Merge both data sources to create a time series for modeling
+# data = pd.DataFrame({
+#     'crypto_supply_btc': [total_crypto_supply_btc] * len(money_supply_us),
+#     'money_supply_us': money_supply_us['M2SL'],
+#     'btc_price': [btc_price] * len(money_supply_us)
+# }, index=money_supply_us.index)
 
-# Check for multicollinearity
-print(data.corr())
+# # Check for multicollinearity
+# print(data.corr())
 
-# Scale the features to ensure similar magnitudes
-scaler = StandardScaler()
-data[['crypto_supply_btc', 'money_supply_us']] = scaler.fit_transform(data[['crypto_supply_btc', 'money_supply_us']])
+# # Scale the features to ensure similar magnitudes
+# scaler = StandardScaler()
+# data[['crypto_supply_btc', 'money_supply_us']] = scaler.fit_transform(data[['crypto_supply_btc', 'money_supply_us']])
 
-# Difference the data to remove trends
-data_diff = data.diff().dropna()
+# # Difference the data to remove trends
+# data_diff = data.diff().dropna()
 
-# Rebuild the model with differenced data
-X = data_diff[['crypto_supply_btc', 'money_supply_us']]  # Independent variables
-y = data_diff['btc_price']  # Dependent variable
+# # Rebuild the model with differenced data
+# X = data_diff[['crypto_supply_btc', 'money_supply_us']]  # Independent variables
+# y = data_diff['btc_price']  # Dependent variable
 
-# Add a constant to the model (intercept)
-X = sm.add_constant(X)
+# # Add a constant to the model (intercept)
+# X = sm.add_constant(X)
 
-# Fit the model
-model = sm.OLS(y, X).fit()
+# # Fit the model
+# model = sm.OLS(y, X).fit()
 
-# Get model summary
-print(model.summary())
+# # Get model summary
+# print(model.summary())
